@@ -1,10 +1,8 @@
 #include "cordes.h"
 
-void enregistrer_cordes (struct Diagramme *d, int *t, int n, int signe) {
+void enregistrer_cordes (struct Diagramme *d, int *t, int n) {
   /*
    * Enregistre un tableau 't' de 'n' cordes dans un diagramme d'adresse 'd'.
-   * Si le booléen 'signe' est vrai, 't' contient des entiers relatifs,
-   * dont le signe indique celui du croisement.
    */
   int i, j, k, m, p, x;
 
@@ -19,8 +17,6 @@ void enregistrer_cordes (struct Diagramme *d, int *t, int n, int signe) {
     p = j + k;
     d->brin[j].longueur = k;
     d->brin[p].longueur = - k;
-    if (signe)
-      d->brin[j].signe = d->brin[p].signe = x > 0 ? +1 : -1;
     do j++; while (d->brin[j].longueur);
   }
 }
@@ -37,40 +33,21 @@ void enregistrer_brins (struct Diagramme *d, int *t, int n) {
   }
 }
 
-void afficher_cordes (struct Diagramme *d, int signe) {
-  /*
-   * Affiche les longueurs des cordes d'un diagramme.
-   * Si le booléen 'signe' est vrai, la longueur est précédée
-   * du signe du croisement.
-   */
-  int j, s;
-
-  for (int i = 0; i < 2 * d->taille; i++) {
-    j = d->brin[i].longueur;
-    if (j > 0) {
-      if (signe && (s = d->brin[i].signe) ) {
-        if (s < 0)
-          j = - j;
-        printf ("%+4d", j);
-      }
-      else
-        printf ("%3d", j);
-    }
-  }
-}
-
 void afficher_brins (struct Diagramme *d) {
   /* affiche les longueurs des brins d'un diagramme */
-  for (int i = 0; i < 2 * d->taille; i++)
-    printf ("%3d", d->brin[i].longueur);
+  int j, n = 2 * d->taille;
+  for (int i = 0; i < n; i++){
+    j = d->brin[i].longueur;
+    if (j<0) j += n;
+    printf ("%3d", j);
+  }
   if(dowker) {
     printf (" DT:");
-    for (int i = 0; i < 2 * d->taille; i += 2) {
-      int j = i + d->brin[i].longueur + 1;
-      printf ("%3d", j / 2);
+    for (int i = 0; i < n; i += 2) {
+      j = i + d->brin[i].longueur + 1;
+      printf ("%3d", j);
     }
   }
-
 }
 
 void afficher_orientations (struct Diagramme *d) {
@@ -79,14 +56,6 @@ void afficher_orientations (struct Diagramme *d) {
 
   for (i = 0; i < 2 * d->taille; i++)
     printf ("%3d", d->brin[i].orientation);
-}
-
-void afficher_signes (struct Diagramme *d) {
-  /* affiche les signes des brins d'un diagramme */
-  int i;
-
-  for (i = 0; i < 2 * d->taille; i++)
-    printf ("%3d", d->brin[i].signe);
 }
 
 void trace_t (int *t, int n){
@@ -192,6 +161,11 @@ static int completer_involution (int *t, int n, int i, int p) {
   }
   t[i] = 0;    /* impossible de compléter l'involution à partir du brin i */
   return 0;
+}
+
+void involution_reverse (int *t, int *u, int n) {
+  for (int i = 0, j = n - 1; i < n; i++, j--)
+    u[i] = -t[j];
 }
 
 int minimum_cyclic (int *t, int n) {
@@ -426,11 +400,35 @@ int is_minimal_diedral (int *t, int n) {
   return 1;
 }
 
-void involution_reverse (int *t, int *u, int n) {
-  for (int i = 0, j = n - 1; i < n; i++, j--)
-    u[i] = -t[j];
+int is_chiral_cyclic (struct Diagramme *d) {
+  /*
+   * On suppose que la fonction `orienter()` a calculé les orientations des brins,
+   * avec le brin 0 orienté positivement par convention.
+   * On suppose aussi que la période a été calculée par `minimim_cyclic()`
+   * ou sa soeur `is_minimal_cyclic()`.
+   * Le diagramme `d` comporte n cordes, avec n = `d->taille`.
+   */
+  if (periode > d->taille)  // orbite cyclique maximale, de taille 2n
+    return 1;
+  return d->brin[periode].orientation > 0;
 }
 
+int is_chiral_diedral (struct Diagramme *d) {
+  /*
+   * On suppose que la période cyclique et la taille de l'orbite
+   * diédrale ont été calculées par `is_minimal_diedral()`.
+   */
+  if (!is_chiral_cyclic(d)) return 0;
+  if (periode < orbite)  // une orbite diédrale regroupe deux orbites cycliques
+    return 1;
+  /*
+   * En lisant le diagramme de cordes à l'envers, delta désigne l'indice
+   * de départ de l'involution minimale, cf `is_minimal_diedral()`.
+   */
+  return d->brin[periode - delta - 1].orientation > 0;
+}
+
+/* unused */
 void rotation (struct Diagramme *d) {
   /*
    * Effectue une rotation sur le diagramme: la nouvelle origine

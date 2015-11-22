@@ -31,33 +31,6 @@ void chrono (char *s) {
   ftime( &debut );
 }
 
-void traiter (struct Diagramme *d) {
-  if (gauss && ! realisable(d))
-    return;
-  compteur++;
-  if (liste) {
-    afficher_brins (d);
-    printf ("\n");
-    if (gauss){
-      afficher_orientations (d);
-      printf ("\n");
-    }
-  }
-  if (groupe == 1) {
-    nb_diag [periode]++;
-    if (!gauss) return;
-    if (periode > d->taille || d->brin[periode].orientation > 0)
-      miroir++;
-  }
-  else if (groupe == 2) {
-    nb_diag [orbite]++;
-    if (!gauss) return;
-    if ((periode > d->taille || d->brin[periode].orientation > 0) &&
-        (periode < orbite || d->brin[periode - delta - 1].orientation > 0))
-      miroir++;
-  }
-}
-
 int filtrer (int *t, int n) {
   /*
    * La fonction 'filtrer' élimine les diagrammes non minimaux
@@ -75,7 +48,45 @@ int filtrer (int *t, int n) {
   return is_minimal_cyclic(t, m);
 }
 
-void liste_diagrammes (int *t, int n, int max) {
+void traiter (struct Diagramme *d) {
+  if (gauss && ! realisable(d))
+    return;
+  compteur++;
+  if (liste) {
+    afficher_brins (d);
+    printf ("\n");
+    if (gauss){
+      afficher_orientations (d);
+      printf ("\n");
+    }
+  }
+  if (groupe == 1) {
+    nb_diag [periode]++;
+    if (liste)
+      printf ("Période%3d", periode);
+    if (gauss) {
+      if (is_chiral_cyclic(d))
+        miroir++;
+      else if (liste)
+        printf(", achiral");
+    }
+  }
+  else if (groupe == 2) {
+    nb_diag [orbite]++;
+    if (liste)
+      printf ("Période%3d, orbite diédrale de taille%3d", periode, orbite);
+    if (gauss) {
+      if (is_chiral_diedral(d))
+        miroir++;
+      else if (liste)
+        printf(", achiral");
+    }
+  }
+  if (liste)
+    printf("\n");
+}
+
+void parcourir_diagrammes (int *t, int n, int max) {
   int f, m = 2 * n;
   struct Diagramme d;
 
@@ -99,22 +110,24 @@ int main (int argc, char **argv) {
 
   // global options
   dowker = groupe = liste = gauss = trace = zuber = 0;
-  while ((c = getopt(argc, argv, "cdglrtz")) != -1)
+  while ((c = getopt(argc, argv, "cdgklstz")) != -1)
     switch (c) {
       case 'c':
-        groupe = 1; // cyclic groupe
+        groupe = 1; // groupe cyclique
         break;
       case 'd':
-        dowker = 1;
+        groupe = 2; // groupe diédral
         break;
       case 'g':
         gauss = 1;
         break;
+      case 'k':
+        dowker = 1;
       case 'l':
         liste = 1;
         break;
-      case 'r':     // reverse
-        groupe = 2;  // diedral groupe
+      case 's':
+        stat = 1;
         break;
       case 't':
         trace = 1;
@@ -130,25 +143,28 @@ int main (int argc, char **argv) {
   if (n > 8) liste = 0;
   t [0] = 1;
   for (int i = 1; i < 2 * n; i++) t [i] = 0;
-  liste_diagrammes (t, n, max);
+  parcourir_diagrammes (t, n, max);
 
-  if (!liste)
+  if (!liste && n > 8)
     chrono ("Chrono");
   if (zuber) {
-    if (groupe > 1)
-      printf ("%8d UU-immersions, %d UO-immersions\n", compteur, compteur + miroir);
-    else
+    if (groupe == 1)
       printf ("%8d OU-immersions, %d OO-immersions\n", compteur, compteur + miroir);
+    else if (groupe == 2)
+      printf ("%8d UU-immersions, %d UO-immersions\n", compteur, compteur + miroir);
   }
   else {
-    printf ("%d involutions construites", cfiltre);
+    printf ("%d involutions construites =>", cfiltre);
     if (groupe && ctraitement)
-      printf (", %d sont minimales", ctraitement);
-    if (gauss)
-      printf (", %d sont réalisables (%d)", compteur, compteur + miroir);
+      printf (" %d minimale(s)", ctraitement);
+    if (gauss) {
+      printf (" %d réalisable(s)", compteur);
+      if (groupe)
+        printf (" %d chirale(s)", miroir);
+    }
     printf ("\n");
   }
-  if (groupe){
+  if (groupe && stat){
     int involution = 0;
     for (int i = 0; i <= BRIN_MAX; i++)
       if (nb_diag [i] > 0) {
@@ -158,15 +174,7 @@ int main (int argc, char **argv) {
           printf ("%8d orbite(s) diédrale(s) de taille %2d\n", nb_diag [i], i);
         involution += i * nb_diag [i];
       }
-    if (zuber)
-      printf("\n");
-    else
-      printf ("%8d involution(s)\n", involution);
+    printf ("%8d involution(s)\n", involution);
   }
-
-  /*
-    if (complexite > 0)
-      printf ("Complexité moyenne: %.2f\n", (float) complexite / traitement);
-  */
   return 1; /* pour respecter les standards et faire plaisir à gcc */
 }

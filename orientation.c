@@ -6,23 +6,21 @@
  */
 int oriente[CORDE_MAX], libre;
 
-/*
- * Une corde (i,p) est aussi un circuit i->p, analysé
- * par la fonction ci-dessous, qui suppose que
- * 1. i<p et 2. le croisement (i,p) est déjà orienté.
- *
- * Un lobe est un circuit interne j->q
- * (i<j<q<p) où j n'appartient pas déjà à un lobe
- * (les lobes ne se chevauchent pas).
- *
- * S'il n'y a pas de lobe, la suite de brins[i,i+1,...,p-1]
- * forme une courbe de Jordan;
- * sinon, pour chaque lobe j->q, il faut retirer du circuit
- * la suite de brins[j, j+1,...,q-1] pour obtenir une courbe de Jordan.
- */
-
 int circuit (struct Diagramme *d, int i) {
-
+  /*
+   * Une corde (i,p) est aussi un circuit i->p,
+   * analysé par cette fonction, qui suppose que
+   * 1. i<p et 2. le croisement (i,p) est déjà orienté.
+   *
+   * Un lobe est un circuit interne j->q
+   * (i<j<q<p) où j n'appartient pas déjà à un lobe
+   * (les lobes ne se chevauchent pas).
+   *
+   * S'il n'y a pas de lobe, la suite de brins[i,i+1,...,p-1]
+   * forme une courbe de Jordan;
+   * sinon, pour chaque lobe j->q, il faut retirer du circuit
+   * la suite de brins[j, j+1,...,q-1] pour obtenir une courbe de Jordan.
+   */
   int
     n = 2 * d->taille,
     j, p, q, r,
@@ -137,7 +135,6 @@ int orienter (struct Diagramme *d, int *ok) {
   libre = 1;
 
   for (int i = 0; i < libre; i++) {
-    complexite++;
     *ok = circuit (d, oriente[i]);
     if (! *ok || libre >= d->taille)
       return libre;
