@@ -140,7 +140,7 @@ int main (int argc, char **argv) {
   ftime( &debut );
 
   n = atoi (argv [optind]);
-  if (n > 8) liste = 0;
+  // if (n > 8) liste = 0;
   t [0] = 1;
   for (int i = 1; i < 2 * n; i++) t [i] = 0;
   parcourir_diagrammes (t, n, max);

@@ -3,14 +3,16 @@ Oriented curves with 6 crossings:
     [Release]./TaitCurves -cg 6
     22 involutions construites => 10 minimale(s) 3 réalisable(s) 3 chirale(s)
 
-Option 'c' (cyclic) means that diagrams are grouped according to the action of the cyclic group, and option 'g' (gauss) means that we test if they describe plane curves. Output shows that only 22 diagrams (i.e. involutions) were built (the other ones had no chance to be canonical representatives of their cyclic class), corresponding to 10 cyclic classes; 3 of them represent plane curves, all chirals. Option 'z' (zuber) display results with notations of the article CZ (Coquereaux, Zuber) *Maps, immersions and permutations*, http://arxiv.org/abs/1507.03163:
+Option 'c' (cyclic) means that diagrams are grouped according to the action of the cyclic group, and option 'g' (gauss) means that we select *realizable* diagrams, i.e. that describe plane curves.
+Output shows that only 22 diagrams (i.e. involutions) were built (the other ones had no chance to be canonical representatives of their cyclic class), corresponding to 10 cyclic classes; 3 of them represent plane curves, all chirals.
+Option 'z' (zuber) display results with notations of the article CZ (Coquereaux, Zuber) *Maps, immersions and permutations*, http://arxiv.org/abs/1507.03163:
 
     [Release]./TaitCurves -cgz 6
            3 OU-immersions, 6 OO-immersions
 
 (the first 'O' is for Oriented curves, the second symbol U/O is for an Unoriented/Oriented sphere); chiral curves are not equivalent to their mirror.
 
-Option 'l' (list) display each realizable diagram, as a sequence of chord *lengths*, followed by orientations of the corresponding crossings:
+Option 'l' (list) display each diagram, as a sequence of chord *lengths*, followed by orientations of the corresponding crossings:
 
     [Release]./TaitCurves -cgl 6
       3  5  5  9  5  5  7  7  3  7  7  9
@@ -48,7 +50,8 @@ Option 'k' (dowKer) adds *Dowker-Thistlethwaite (DT) notation* (without signs, w
     Période  6, orbite diédrale de taille  6, achiral
     22 involutions construites => 9 minimale(s) 3 réalisable(s) 1 chirale(s)
 
-First result above is *Figure 3* of CZ; this is the only chiral curve with 6 crossings, but for a large number of crossings, most of curves are chiral; therefore only achiral curves are reported as such in lists similar to the above one. The 27 indecomposable irreducible immersions of an unoriented circle in an unoriented sphere with n=8 double points (*Figure 15* in CZ) may be listed by `./TaitCurves -dgk 8` (with a different ordering).
+First result above is *Figure 3* of CZ; this is the only chiral curve with 6 crossings, but when number of crossings is large, most of curves are chiral; therefore only achiral curves are reported as such in lists similar to the above one.
+The 27 indecomposable irreducible immersions of an unoriented circle in an unoriented sphere with n=8 double points (*Figure 15* in CZ) may be listed by `./TaitCurves -dgk 8` (with a different ordering).
 
 Option 's' (statistics) displays the repartition of diagrams according to orbits (cyclic or diedral):
 
