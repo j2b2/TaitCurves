@@ -12,8 +12,8 @@ Here are three files (not including a trivial header file):
   - `cordes.c` contains the usual `main()` function, and auxiliary ones, to display results of the computations; this is the tedious and obsolete part of a classical *C interface*;
   - `diag.c` contains mainly the following functions:
    - `involution_suivante()` (most of names of variables and functions are french, as are comments inside the code, sorry), used to iterate through involutions;
-   - `minimum_cyclic()` and `is_minimal_cyclic()` used to select a canonical representation of an *oriented* curve (we may change the basepoint before traveling along the circle); I tried to optimize these functions, which should be as fast as possible;
-   - `is_minimal_diedral()` used to select a canonical representation of an *unoriented* curve (we may change the direction before traveling along the circle);
+   - `minimum_cyclic()` and `is_minimal_cyclic()` used to select a canonical representation of an *oriented* curve (we may change the basepoint before travelling along the circle); I tried to optimize these functions, which should be as fast as possible;
+   - `is_minimal_diedral()` used to select a canonical representation of an *unoriented* curve (we may change the direction before travelling along the circle);
    - `is_chiral_cyclic()` and`is_chiral_diedral()`.
   - `orientation.c` contains functions to compute orientation of crossings: the algorithm is not trivial, and is the essential part of this work. Diagrams with a coherent orientation are said *realizables*, and for those that are *indecomposable*, this orientation is unique, up to the orientation of the plane (or the sphere), see e.g. HTW.
 

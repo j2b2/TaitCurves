@@ -404,7 +404,7 @@ int is_chiral_cyclic (struct Diagramme *d) {
   /*
    * On suppose que la fonction `orienter()` a calculé les orientations des brins,
    * avec le brin 0 orienté positivement par convention.
-   * On suppose aussi que la période a été calculée par `minimim_cyclic()`
+   * On suppose aussi que la période a été calculée par `minimum_cyclic()`
    * ou sa soeur `is_minimal_cyclic()`.
    * Le diagramme `d` comporte n cordes, avec n = `d->taille`.
    */
